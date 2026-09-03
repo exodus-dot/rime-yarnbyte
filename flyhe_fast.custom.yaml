@@ -100,3 +100,8 @@ patch:
     # rules_db: predict_rules.db
     # continuous_prediction: true       # 是否开启连续预测 false: 受 max_iterations 限制; true: 尽可能持续预测，直到没有候选
     # deleted_record_expire_days: 90    # 默认0永不清理
+
+  # ================= [yarnbyte 用户偏好] =================
+  # 候选排序固定，不按输入习惯动态调频：关闭主翻译器的用户词典。
+  # 代价：不再自动记住新造的词组（可用 custom_phrase_flypy.txt 手动固定）。
+  translator/enable_user_dict: false

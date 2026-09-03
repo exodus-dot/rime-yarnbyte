@@ -1,28 +1,16 @@
-# default.custom.yaml —— rime-yarnbyte 整合版全局补丁
-# encoding: utf-8
-#
-# 基底为 rime-crane 的 default.yaml（未改动）。本文件只做两件事：
-#   1. 合并方案列表：crane 原有方案 + rime-fast-xhup 方案
-#   2. 让方案选单记住 fast-xhup 方案用到的开关
-#
-# 小狼毫「输入法设定」勾选方案时会改写本文件的 patch/schema_list（注释会丢失）。
-# 雾凇拼音(rime_ice)默认没有勾选，需要时在「输入法设定」里勾上即可。
-#
-# 飞鹤反查(flypy_reverse)、飞鹤拆字(flypy_radical)、ecdict、melt_eng、radical_pinyin、xhup_reverse
-# 都是内部依赖，通过各方案的 schema/dependencies 自动编译，不列入此处。
-
+customization:
+  distribution_code_name: Weasel
+  distribution_version: 0.17.4
+  generator: "Rime::SwitcherSettings"
+  modified_time: "Thu Sep  3 16:15:37 2026"
+  rime_version: 1.13.1
 patch:
   schema_list:
-    # ---- rime-crane 原有方案 ----
-    - schema: xhup                   # 小鹤音形
-    - schema: double_pinyin_flypy    # 小鹤双拼
-    # - schema: rime_ice             # 雾凇拼音（全拼），按需启用
-    # ---- rime-fast-xhup 方案 ----
-    - schema: flypy_xhfast           # 飞鹤快拼
-    - schema: flyhe_fast             # 飞鹤快码
-    - schema: easy_en                # Easy English
-
-  # 追加 fast-xhup 方案的开关到记忆列表（crane 方案没有这些开关，不受影响）
-  switcher/save_options/+:
+    - {schema: xhup}
+    - {schema: double_pinyin_flypy}
+    - {schema: easy_en}
+    - {schema: flyhe_fast}
+    - {schema: flypy_xhfast}
+  "switcher/save_options/+":
     - char_mode
     - traditionalize

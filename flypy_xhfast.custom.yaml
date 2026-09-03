@@ -29,7 +29,7 @@ patch:
   switches/+:
     - name: emoji
       states: [🈚️, 😄]
-      reset: 1
+      reset: 0                        # [yarnbyte 用户偏好] 默认关闭 Emoji 候选（原为 1）
     - name: prediction  # 仅用于移动端
       states: [休想, 联想]
     - name: char_mode
@@ -333,3 +333,11 @@ patch:
     #   calendar_data: calendar.yaml    # 加载日历数据（节气/节假日）
     #   rules:
     #     - custom_predict_rules.yaml   # 从用户目录加载规则文件
+
+  # ================= [yarnbyte 用户偏好] =================
+  # 1) 候选栏不显示 Emoji：emoji 开关默认关闭（reset: 0 已在上方 switches 里设置）。
+  #    临时想用时按 Control+Shift+4 开启，下次启动又恢复关闭。
+  # 2) 候选排序固定，不按输入习惯动态调频：关闭主翻译器和英文翻译器的用户词典。
+  #    代价：不再自动记住新造的词组（可用 Control+t 手动置顶、custom_phrase_flypy.txt 手动固定）。
+  translator/enable_user_dict: false
+  easy_en/enable_user_dict: false
