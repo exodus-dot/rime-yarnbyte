@@ -209,7 +209,7 @@ patch:
 
   custom_phrase/+:                    # 自定义短语
     user_dict: custom_phrase_flypy    # [yarnbyte] 双拼编码短语放 custom_phrase_flypy.txt，crane 的 custom_phrase.txt 留给雾凇全拼
-    comment_mark: " 📌"               # 注解标记
+    comment_mark: ""                  # [yarnbyte 用户偏好] 去掉固定短语的 📌 标记（原为 " 📌"）
 
   emoji/opencc_config: emoji_xhup.json  # [yarnbyte] 使用 fast-xhup 的 emoji_word.txt 词表（crane 的 emoji.json 不动）
 
