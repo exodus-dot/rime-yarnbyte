@@ -1,0 +1,9 @@
+# weasel.custom.yaml —— rime-yarnbyte 外观微调
+# encoding: utf-8
+#
+# 外观整体沿用 rime-crane 的 weasel.yaml，这里只改圆角。
+# 小狼毫「界面风格设定」选配色时会往本文件写 style/color_scheme，其余项会保留。
+
+patch:
+  style/layout/corner_radius: 2    # [yarnbyte 用户偏好] 候选窗口圆角，crane 原值 8，0 为直角
+  style/layout/round_corner: 2     # [yarnbyte 用户偏好] 高亮色块圆角，crane 原值 8，0 为直角

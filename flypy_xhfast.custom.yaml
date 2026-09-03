@@ -341,3 +341,15 @@ patch:
   #    代价：不再自动记住新造的词组（可用 Control+t 手动置顶、custom_phrase_flypy.txt 手动固定）。
   translator/enable_user_dict: false
   easy_en/enable_user_dict: false
+
+  # 3) 新词仍能记住，但记在独立的 free_user_dict 里，不碰主词库的排序：
+  #    - 精准造词（` 逐字选）选完上屏即记入 free_user_dict（原配置不记）
+  #    - 自由造词（`= 引导）本来就记入 free_user_dict
+  #    - 普通输入时由 free_uses_word 翻译器提供这些自造词，权重 1.0 低于主翻译器 1.3，
+  #      所以它们排在词库候选之后，词库本身的顺序不变
+  make_sentence/+:
+    enable_user_dict: true
+    user_dict: free_user_dict
+    contextual_suggestions: true      # 有语法模型（.gram）时按上下文挑字，避免拼出「复何」这类怪词
+  free_uses_word/+:
+    initial_quality: 1.0              # 原为 1.5（自造词压在词库候选之前）
