@@ -9,7 +9,7 @@
 *.userdb/
 installation.yaml
 user.yaml
-*.custom.yaml
+# *.custom.yaml   # [yarnbyte] 整合版的补丁文件需要纳入版本管理，故不再忽略
 
 others/script/scel2txt/out/*
 others/script/scel2txt/scel/*
@@ -19,3 +19,5 @@ others/script/scel2txt/scel/*
 rime_console
 rime_deployer
 rime_patch
+# [yarnbyte] 语法模型按需自行下载，不入库
+*.gram

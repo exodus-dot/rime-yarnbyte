@@ -1,0 +1,12 @@
+# easy_en.custom.yaml —— rime-yarnbyte 整合版补丁（rime-fast-xhup 原项目没有此文件）
+# encoding: utf-8
+#
+# 只做一件事：把继承来源从 crane 的 default.yaml 改为 flypy_preset.yaml，
+# 避免 crane 的「- = 翻页」等全局按键绑定影响英文方案。
+---
+
+patch:
+  key_binder/+:
+    import_preset: flypy_preset
+  recognizer/+:
+    import_preset: flypy_preset
