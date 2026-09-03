@@ -31,6 +31,10 @@ key_binder:
     - {accept: KP_Subtract, send: minus,    when: composing}
     - {accept: KP_Decimal,  send: period,   when: composing}
     - {accept: KP_Multiply, send: asterisk, when: composing}
+    # [yarnbyte 用户偏好] 与 crane 方案一致，用 - = 翻页
+    # 代价：飞鹤快拼里候选栏出现时，英文连字符和计算器的减号/等号会被翻页截走
+    - {when: has_menu, accept: minus, send: Page_Up}
+    - {when: has_menu, accept: equal, send: Page_Down}
 
 # 处理符合特定规则的输入码，如网址、反查
 recognizer:
