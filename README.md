@@ -1,112 +1,45 @@
-# 凇鹤拼音
+# rime-yarnbyte
 
-![demo](./others/demo_crane.webp)
+小狼毫（Weasel）用户目录，个人整合版：
 
-整合了雾凇拼音和小鹤双拼/音形方案的拼音输入法，简称「凇鹤拼音」。
+- 基底：[rime-crane](https://github.com/kchen0x/rime-crane)（小鹤音形 / 小鹤双拼 / 雾凇拼音），外观、全局按键、词库全部沿用，文件未改动。
+- 加入：[rime-fast-xhup](https://github.com/boomker/rime-fast-xhup) 的 飞鹤快拼 / 飞鹤快码 / Easy English 及其全部依赖，通过 `*.custom.yaml` 补丁接入，不覆盖任何 crane 文件。
+- 个人偏好：候选排序固定（关闭用户词典调频）、不显示 Emoji 候选、候选栏圆角 2、所有方案统一用 `-` `=` 翻页。
 
-- 雾凇：功能齐全，词库体验良好，长期更新修订。
-- 凇鹤：去除了雾凇中的其他双拼方案，增加了对鹤形的支持，对接官方的小鹤音形。
-- tiger-code 分支中现可使用虎码了。
+整合过程、冲突处理和校验结果见 [docs/2026-09-03-整合报告.md](docs/2026-09-03-整合报告.md)。
 
-[Rime 配置：雾凇拼音 | 长期维护的简体词库](https://github.com/iDvel/rime-ice) 是本方案全拼/双拼部分的基础方案和词库方案。
+## 目录说明
 
-[小鹤双拼/音形](https://www.flypy.com/) 是以双手均衡性最优、强弱指分布最合理、跨排别扭组合频率最低为追求的双拼设计方案。其音形码以易学、单字重码率适度、整体效率持平四码类方案为设计目的。
+| 路径 | 来源 | 说明 |
+|---|---|---|
+| `default.yaml`、`weasel.yaml`、`xhup*`、`rime_ice*`、`double_pinyin_flypy*`、`cn_dicts/`（雾凇六个词库）、`xhup_dicts/`、`lua/`（crane 部分）、`opencc/emoji.json` 等 | rime-crane | 原样 |
+| `flypy_xhfast*`、`flyhe_fast*`、`easy_en*`、`ecdict*`、`flypy_radical*`、`flypy_reverse*`、`cn_dicts/flypy_*`、`cn_dicts/flyhe_*`、`en_dicts/easy_en*` 等、`lua/`（fast 部分及 `lib/`）、`symbols.custom.yaml`、`flypy_keymap.txt`、`predict.db` | rime-fast-xhup | 原样 |
+| `default.custom.yaml`、`weasel.custom.yaml`、`flypy_preset.yaml`、`*.custom.yaml`（含 `[yarnbyte]` 标记）、`custom_phrase_flypy.txt`、`opencc/emoji_xhup.json`、`opencc/others_xhup.txt` | 本仓库 | 整合与偏好补丁 |
+| `tools/integrate-yarnbyte.ps1` | 本仓库 | 从 rime-crane 副本 + rime-fast-xhup 重新生成 fast 部分与偏好补丁，可重复执行 |
+| `tools/switch-rime-currentdir.*` | 本仓库 | 在多套 Rime 配置目录之间切换（junction 到 `%APPDATA%\Rime`）并重新部署 |
 
-[RIME | 中州韵输入法引擎](https://rime.im/) 是一个跨平台的输入法算法框架，这里是 Rime 的一个配置仓库。
+不入库的文件（见 `.gitignore`）：`build/`（部署产物）、`*.userdb/`（用户词频）、`installation.yaml`、`user.yaml`、`*.gram`（语法模型）。
 
-用户需要[下载各平台对应的 Rime 发行版](https://rime.im/download/)，并将此配置应用到配置目录。
+## 在新机器上恢复
 
-详细介绍：[Rime 配置：雾凇拼音](https://dvel.me/posts/rime-ice/)
+1. 安装小狼毫。
+2. 克隆本仓库到任意目录，例如 `D:\Rime\rime-yarnbyte`。
+3. 把 `%APPDATA%\Rime` 指向它（用 `tools/switch-rime-currentdir.bat` 建 junction，或直接把内容复制进去），重新部署。首次部署要编译约 130 MB 词库，需要几分钟。
+4. 可选：语法模型 `zh-hans-t-essay-bgw.gram`（206 MB，[下载](https://github.com/boomker/rime-fast-xhup/releases/download/v1.0.0/zh-hans-t-essay-bgw.gram)）放到根目录，只影响飞鹤快拼的精准造词。
 
+## 更新上游
 
-## 基本套路
+- rime-crane 更新：本仓库保留了它的 git 历史，远程名为 `crane-upstream`，可以直接 `git fetch crane-upstream` 后合并。
+- rime-fast-xhup 更新：把新版放到与本目录同级的 `rime-fast-xhup`，运行 `tools/integrate-yarnbyte.ps1 -Base <上级目录>`。脚本用字符串匹配改写上游补丁，上游改动了对应行会报错停下，需要人工跟进。
 
-- 简体 | 全拼 | 小鹤双拼 | 小鹤音形
-- [雾凇部分全部功能](https://github.com/iDvel/rime-ice#%E5%9F%BA%E6%9C%AC%E5%A5%97%E8%B7%AF)
-- 凇鹤 - 小鹤音形主要功能：
-    - 首选词（必选）
-    - 通过分号次选字词上屏
-    - 随心码调整特殊的码位
-    - 分号键引导的快符（不支持成对符号光标移动到中间）
-    - 一简词
-    - 表外字，主要是粤语词汇
-    - 全码词
-    - `O` 符号引导（默认关闭）
-    - 全码字（默认关闭，出简不全）
-    - 用户码表
-    - 简码提示，如熟悉可以关闭
-    - 二重简码（默认关闭，10.9k 之后由一简词代替，可以根据情况开关）
-    - 左 `Shift` 键用做输入法内的〔中/英〕切换，右 `Shift` 键保留系统（可通过 Karabiner 等工具实现输入法切换）
-    - \` 万能码，作为任意码的补全
-    - 通过 Lua 脚本实现了部分直通车功能
-    - `Tab` 键编码清屏
-    - `Enter` 键编码上屏
-    - `Shift + 空格` 进行〔中/半角〕切换
-    - `Ctrl + .` 进行〔中/英标点〕切换
-    - `Ctrl + j` 进行〔简/繁〕切换
+## 快速参考
 
-### 支持的快符
-
-![](others/fast-symbols.png)
-
-<!--
-http://www.keyboard-layout-editor.com/#/
-[{t:"#ff0000"},"Q\n：“","W\n？","E\n（","R\n）","T\n@","Y\n《","U\n》",{c:"#7d7d7d",t:"#000000"},"I",{c:"#cccccc",t:"#ff0000"},"O\n「」","P\n『』"],
-[{x:0.25},"A\n！","S\n……","D\n、","F\n重复","G\n·","H\n《》","J\n“”","K\n（）","L\n〔〕",{c:"#ffabab"},":\n;"],
-[{x:0.75,c:"#cccccc"},"Z\n“","X\n→","C\n”","V\n——","B\n_",{c:"#7d7d7d",t:"#000000"},"N","M"]
- -->
-
-### 支持的直通车功能
-
-|编码|Windows功能|macOS功能|
-|-|-|-|
-|oav|打开安装目录|打开安装目录|
-|ocm|打开CMD|打开Terminal|
-|odn|打开我的电脑|打开Finder|
-|oec|打开Excel|打开Excel|
-|ogj|打开用户配置目录|打开用户配置目录|
-|oht|打开画图工具|-|
-|ojs|打开计算器|打开计算器|
-|owd|打开Word|打开Word|
-
-|编码|功能|
-|-|-|
-|ojf|〔简/繁〕切换|
-
-## 长期维护词库
-
-```
-- 小鹤音形的主码表：文件 "xhup.dict.yaml"，其中按需加载的码表分别如下：
-  - "xhup_dicts/xhup.user.top"          # 用户置顶码表：可以按需自行添加置顶词汇
-  - "xhup_dicts/xhup.primary"           # -0- 首选字词
-  - "xhup_dicts/xhup.secondary"         # 1.1 次选字词
-  - "xhup_dicts/xhup.whimsicality"      # 1.1 随心码
-  - "xhup_dicts/xhup.fast.symbols"      # 1.2 快符
-  # - "xhup_dicts/xhup.secondary.simple"   # 二重简码：默认开启的是一简词（二重简码和一简词尽量只开一个）
-  - "xhup_dicts/xhup.single.code"       # 2.1 一简词：可以根据自己的情况选择使用一简词还是二重简码
-  - "xhup_dicts/xhup.off-table"         # 2.2 表外字
-  - "xhup_dicts/xhup.full.code.words"   # 2.3 全码词
-  # - "xhup_dicts/xhup.symbols"           # 符号
-  # - "xhup_dicts/xhup.full.code.chars"   # 全码字：在四码时出现在候选词中，不熟练时可开启增加拆词熟练度（默认关闭），应该尽量练习有简打简。
-  - "xhup_dicts/xhup.user"              # 用户码表
-```
-
-## 使用说明
-
-建议备份原先配置，清空配置目录。
-
-### 手动安装
-
-将仓库所有文件复制粘贴进去就好了。
-
-更新词库，手动覆盖 `xhup_dicts` `en_dcits` `opencc` `build` 四个文件夹。
-
-### 软链接安装（推荐）
-
-克隆本仓库到本地（不要删除）。进入仓库目录，将本地目录创建软链接到 Rime 的配置目录：
-
-```
-rm -rf ~/Library/Rime && ln -sif `pwd` ~/Library/Rime
-```
-
-这样的好处是，更新时只需要回到仓库目录运行 `git pull` 即可。
+| 动作 | 飞鹤快拼 |
+|---|---|
+| 单字加辅码 | `fu/pw` 或 `fu/p`，唯一时自动上屏 |
+| 两字词加辅码 | `fuhe/rp`（尾字头码 + 首字头码） |
+| 按声调筛字 | `fu/M`（I U N M 对应一二三四声） |
+| 单字优先（音形四码顶屏） | 有候选时按 Ctrl+s 切换，会记住 |
+| 精准造词 | `` fu`pwhe`rk ``，选完记入 free_user_dict，排在词库候选之后 |
+| 自由造词 | `` `= `` 引导 |
+| 临时打开 Emoji | Ctrl+Shift+4 |
