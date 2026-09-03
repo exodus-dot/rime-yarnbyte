@@ -341,6 +341,7 @@ patch:
   #    代价：不再自动记住新造的词组（可用 Control+t 手动置顶、custom_phrase_flypy.txt 手动固定）。
   translator/enable_user_dict: false
   easy_en/enable_user_dict: false
+  translator/contextual_suggestions: false   # 主翻译器不按上下文重排候选（语法模型只用于精准造词），保证位置固定
 
   # 3) 新词仍能记住，但记在独立的 free_user_dict 里，不碰主词库的排序：
   #    - 精准造词（` 逐字选）选完上屏即记入 free_user_dict（原配置不记）
