@@ -1,0 +1,9 @@
+# rime_ice.custom.yaml —— rime-yarnbyte 用户偏好补丁（rime-crane 原项目没有此文件）
+# encoding: utf-8
+#
+# [yarnbyte 用户偏好] 候选排序固定，不按输入习惯动态调频：关闭主翻译器的用户词典。
+# 代价：不再自动记住新造的词组（可写进 custom_phrase.txt 手动固定，或用 pin_cand_filter 置顶）。
+# 想恢复调频，删掉下面那一行即可。
+
+patch:
+  translator/enable_user_dict: false

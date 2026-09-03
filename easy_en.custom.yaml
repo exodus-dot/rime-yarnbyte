@@ -10,3 +10,6 @@ patch:
     import_preset: flypy_preset
   recognizer/+:
     import_preset: flypy_preset
+
+  # [yarnbyte 用户偏好] 候选排序固定，不按输入习惯动态调频：关闭用户词典（想恢复删掉下一行）
+  translator/enable_user_dict: false
