@@ -7,3 +7,10 @@
 patch:
   style/layout/corner_radius: 2    # [yarnbyte 用户偏好] 候选窗口圆角，crane 原值 8，0 为直角
   style/layout/round_corner: 2     # [yarnbyte 用户偏好] 高亮色块圆角，crane 原值 8，0 为直角
+
+  # [yarnbyte 用户偏好] Firestorm Viewer（Second Life）用的是老式 IMM 输入法接口，
+  # 行内编码容易和它自己的文本框打架，改为用小狼毫自己的编码窗口。
+  # 进程名以任务管理器为准，大小写不敏感；如果你的版本名字不同，照样加一行即可。
+  app_options/firestorm-releasex64.exe/inline_preedit: false
+  app_options/firestorm-release.exe/inline_preedit: false
+  app_options/firestorm-bin.exe/inline_preedit: false
