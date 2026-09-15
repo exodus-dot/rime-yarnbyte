@@ -390,6 +390,35 @@ $s = Replace-Once $s "  key_binder/+:`n    import_preset: default               
 $s = Replace-Once $s "  recognizer/+:`n    patterns/+:`n" "  recognizer/+:`n    import_preset: flypy_preset               # [yarnbyte] 从 flypy_preset.yaml 继承（原为 default）`n    patterns/+:`n" 'flypy_xhfast recognizer'
 $s = Replace-Once $s "  custom_phrase/+:                    # 自定义短语`n    comment_mark: `" 📌`"               # 注解标记`n" "  custom_phrase/+:                    # 自定义短语`n    user_dict: custom_phrase_flypy    # [yarnbyte] 双拼编码短语放 custom_phrase_flypy.txt，crane 的 custom_phrase.txt 留给雾凇全拼`n    comment_mark: `"`"                  # [yarnbyte 用户偏好] 去掉固定短语的 📌 标记（原为 `" 📌`"）`n" 'flypy_xhfast custom_phrase'
 $s = Replace-Once $s "  flypy_key_map/+:                    # 小鹤双拼键位帮助`n" "  emoji/opencc_config: emoji_xhup.json  # [yarnbyte] 使用 fast-xhup 的 emoji_word.txt 词表（crane 的 emoji.json 不动）`n`n  flypy_key_map/+:                    # 小鹤双拼键位帮助`n" 'flypy_xhfast emoji'
+# [yarnbyte 用户偏好] 标点单映射（照搬 crane default）、关闭 pair_punct
+$s = Replace-Once $s ((@'
+    half_shape/+:
+      # '"': {pair: ['‘', '’']}
+      # "'": {pair: ['“', '”']}
+      # ";": {commit: "；"}           # 取消注释后, 恢复默认分号
+      ";": [";", "；"]                # 添加注释, 以恢复默认分号
+      "_": "_"
+      '\': ['､', '、', '\', '＼']
+      "@":
+        - "@"
+        # - "@xxx.com"
+        - "@gmail.com"
+        - "@foxmail.com"
+        - "@outlook.com"
+        - "@hotmail.com"
+        - "@qq.com"
+        - "@163.com"
+        - "@139.com"
+'@) -replace "`r`n", "`n") ((@'
+    half_shape/+:                   # [yarnbyte 用户偏好] 上游在此追加的 ; _ \ @ 多选映射已移除，整表改由文末 punctuator/half_shape 统一定义
+'@) -replace "`r`n", "`n") 'flypy_xhfast half_shape/+ 段'
+$s = Replace-Once $s ((@'
+  pair_punct:                         # 符号配对开关
+    enable: true
+'@) -replace "`r`n", "`n") ((@'
+  pair_punct:                         # 符号配对开关
+    enable: false                     # [yarnbyte 用户偏好] 关闭：它只允许括号里放一个词，上屏即自动补右括号（原为 true）
+'@) -replace "`r`n", "`n") 'flypy_xhfast pair_punct'
 # [yarnbyte 用户偏好] 关闭 Emoji 候选、固定候选排序
 $s = Replace-Once $s "    - name: emoji`n      states: [🈚️, 😄]`n      reset: 1`n" "    - name: emoji`n      states: [🈚️, 😄]`n      reset: 0                        # [yarnbyte 用户偏好] 默认关闭 Emoji 候选（原为 1）`n" 'flypy_xhfast emoji 开关'
 $s = $s.TrimEnd("`n") + "`n" + ((@'
@@ -413,6 +442,44 @@ $s = $s.TrimEnd("`n") + "`n" + ((@'
     contextual_suggestions: true      # 有语法模型（.gram）时按上下文挑字，避免拼出「复何」这类怪词
   free_uses_word/+:
     initial_quality: 1.0              # 原为 1.5（自造词压在词库候选之前）
+
+  # 4) 标点：中文状态直接出中文符号，英文状态出英文符号（Ctrl+, 切换中英标点），不再弹出中英文符号候选。
+  #    映射表照搬 crane 的 default.yaml（与小鹤音形 / 小鹤双拼一致）。只有三个功能引导键保留 fast 原来的列表形式：
+  #    ` 精准造词 / 部件组字，~ 英文造词，/ 符号菜单（/vs、/fh 等）。
+  #    代价：fast 的分号快捷符号（;d 顿号、;j # 等）不再可用，顿号改用 \ 键，破折号用 Shift+- 。
+  punctuator/half_shape:
+    ',': '，'
+    '.': '。'
+    '<': '《'
+    '>': '》'
+    '?': '？'
+    ';': '；'
+    ':': '：'
+    "'": {pair: ['‘', '’']}
+    '"': {pair: ['“', '”']}
+    '\': '、'
+    '|': '|'
+    '!': '！'
+    '@': '@'
+    '#': '#'
+    '%': '%'
+    '$': '¥'
+    '^': '……'
+    '&': '&'
+    '*': '*'
+    '(': '（'
+    ')': '）'
+    '-': '-'
+    '_': '——'
+    '+': '+'
+    '=': '='
+    '[': '【'
+    ']': '】'
+    '{': '「'
+    '}': '」'
+    '`': ["`", "```", ‵, ‶, ‷, ′, ″, ‴, ⁗]                                # 保留 fast 列表：精准造词 / 部件组字引导键
+    '~': ["~", ～, ˜, ˷, ⸯ, ≈, ≋, ≃, ≅, ≇, ∽, ⋍, ≌, ﹏, ﹋, ﹌, ︴]          # 保留 fast 列表：英文造词引导键
+    '/': ["/", ／, ÷]                                                     # 保留 fast 列表：符号菜单引导键
 '@) -replace "`r`n", "`n") + "`n"
 Write-Utf8 (Join-Path $Target 'flypy_xhfast.custom.yaml') $s
 
@@ -472,6 +539,13 @@ Write-Utf8 $wc ((((@'
 patch:
   style/layout/corner_radius: 2    # [yarnbyte 用户偏好] 候选窗口圆角，crane 原值 8，0 为直角
   style/layout/round_corner: 2     # [yarnbyte 用户偏好] 高亮色块圆角，crane 原值 8，0 为直角
+
+  # [yarnbyte 用户偏好] Firestorm Viewer（Second Life）用的是老式 IMM 输入法接口，
+  # 行内编码容易和它自己的文本框打架，改为用小狼毫自己的编码窗口。
+  # 进程名以任务管理器为准，大小写不敏感；如果你的版本名字不同，照样加一行即可。
+  app_options/firestorm-releasex64.exe/inline_preedit: false
+  app_options/firestorm-release.exe/inline_preedit: false
+  app_options/firestorm-bin.exe/inline_preedit: false
 '@) -replace "`r`n", "`n") + "`n") + $keep)
 
 # ---------------------------------------------------------------- 4. 校验
