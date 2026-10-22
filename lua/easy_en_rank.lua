@@ -29,7 +29,7 @@ function easy_en_rank.func(input, env)
     local ctx_input = env.engine.context.input:lower()
     local items = {}
     for cand in input:iter() do
-        local lower = cand.text:lower()
+        local lower = cand.text:lower():gsub("%s+$", "") -- 上游 enhance_filter 会给候选补尾部空格
         items[#items + 1] = {
             cand = cand,
             idx = #items,

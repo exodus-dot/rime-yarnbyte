@@ -19,5 +19,7 @@ patch:
   # 其他方案（飞鹤快拼等）不挂载此过滤器，排序不变。
   engine/filters/+:
     - lua_filter@*easy_en_rank
-  # 补全候选先按字母序取前 N 个再重排，N 太小会漏掉靠后的常用词（原为 666）
-  easy_en/word_search_limit: 3000
+
+  # [yarnbyte] 已改用 BlindingDark/rime-easy-en 原版方案。原版的分词功能默认依赖 wordninja 原生库，
+  # Windows 上没装会让 enhance_filter 初始化失败，故关闭；装好 wordninja.dll 后可改回 true。
+  easy_en/split_sentence: false
