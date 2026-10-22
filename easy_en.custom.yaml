@@ -13,3 +13,11 @@ patch:
 
   # [yarnbyte 用户偏好] 候选排序固定，不按输入习惯动态调频：关闭用户词典（想恢复删掉下一行）
   translator/enable_user_dict: false
+
+  # [yarnbyte 用户偏好] 仅 Easy English 方案：英文候选按词频重排（常用词在前）。
+  # 词频表 lua/easy_en_rank.txt 由 tools/gen-easy-en-rank.ps1 生成；不需要时删掉下面两项。
+  # 其他方案（飞鹤快拼等）不挂载此过滤器，排序不变。
+  engine/filters/+:
+    - lua_filter@*easy_en_rank
+  # 补全候选先按字母序取前 N 个再重排，N 太小会漏掉靠后的常用词（原为 666）
+  easy_en/word_search_limit: 3000
