@@ -23,3 +23,8 @@ patch:
   # [yarnbyte] 已改用 BlindingDark/rime-easy-en 原版方案。原版的分词功能默认依赖 wordninja 原生库，
   # Windows 上没装会让 enhance_filter 初始化失败，故关闭；装好 wordninja.dll 后可改回 true。
   easy_en/split_sentence: false
+
+  # [yarnbyte] 原版选词会自动补尾部空格；候选高亮时按下面这些标点，则去掉空格并直接跟标点上屏。
+  # 想改标点集合就改这个字符串；不需要此功能就删掉本项和下一项。
+  easy_en/no_space_punct: ',.;:?!)]}"'
+  engine/processors/@before 0: lua_processor@*easy_en_punct
