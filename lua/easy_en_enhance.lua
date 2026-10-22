@@ -32,6 +32,14 @@ local function load_split_cost()
    f:close()
    split_cost["a"] = 4 - math.log(0.9)
    split_cost["i"] = split_cost["a"]
+   -- 词频表（ECDICT）没有的常用缩写，补一个中等频率，避免被拆成单字母（如 ai -> a i）
+   split_cost["am"] = 4 - math.log(0.8)
+   for _, w in ipairs({ "ai", "ok", "tv", "pc", "ui", "ux", "ip", "db", "api", "app", "apps", "url", "css", "html", "sql", "json", "cpu", "gpu", "ios", "wifi", "usb" }) do
+      if not split_cost[w] then
+         split_cost[w] = 4 - math.log(0.45)
+         if #w > split_maxlen then split_maxlen = #w end
+      end
+   end
 end
 
 local function builtin_split(sentence)
