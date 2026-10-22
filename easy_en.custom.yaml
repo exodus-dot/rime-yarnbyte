@@ -20,9 +20,11 @@ patch:
   engine/filters/+:
     - lua_filter@*easy_en_rank
 
-  # [yarnbyte] 已改用 BlindingDark/rime-easy-en 原版方案。原版的分词功能默认依赖 wordninja 原生库，
-  # Windows 上没装会让 enhance_filter 初始化失败，故关闭；装好 wordninja.dll 后可改回 true。
-  easy_en/split_sentence: false
+  # [yarnbyte] 已改用 BlindingDark/rime-easy-en 原版方案。原版分词依赖 wordninja 外部程序，
+  # Windows 上没装会初始化失败，所以改用 lua/easy_en_enhance.lua 里内置的纯 Lua 拆词（读 lua/easy_en_rank.txt）。
+  # 连续敲 helloworld 时，第一候选是拆好并补空格的 "hello world "。
+  easy_en/split_sentence: true
+  easy_en/use_builtin_split: true
 
   # [yarnbyte] 原版选词会自动补尾部空格；候选高亮时按下面这些标点，则去掉空格并直接跟标点上屏。
   # 想改标点集合就改这个字符串；不需要此功能就删掉本项和下一项。

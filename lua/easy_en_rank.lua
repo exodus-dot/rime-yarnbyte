@@ -33,7 +33,7 @@ function easy_en_rank.func(input, env)
         items[#items + 1] = {
             cand = cand,
             idx = #items,
-            exact = (lower == ctx_input) and 1 or 0,
+            exact = (cand.comment == "💡") and 2 or ((lower:gsub("%s+", "") == ctx_input) and 1 or 0),
             w = freq[lower] or 0,
             len = #lower,
         }

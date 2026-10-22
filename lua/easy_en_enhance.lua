@@ -14,6 +14,51 @@ local function memory_callback(memory, commit)
    end
 end
 
+-- [yarnbyte] 纯 Lua 拆词：用 lua/easy_en_rank.txt 的词频做最小代价切分，不依赖 wordninja 外部程序
+local split_cost, split_maxlen
+local function load_split_cost()
+   split_cost, split_maxlen = {}, 0
+   local min_freq = { [2] = 40, [3] = 20 }
+   local f = io.open(rime_api.get_user_data_dir() .. "/lua/easy_en_rank.txt", "r")
+   if not f then return end
+   for line in f:lines() do
+      local w, n = line:match("^([a-z]+)\t(%d+)")
+      n = tonumber(n)
+      if w and n >= 10 and #w > 1 and (#w > 3 or n >= min_freq[#w]) then
+         split_cost[w] = 4 - math.log(n / 100)
+         if #w > split_maxlen then split_maxlen = #w end
+      end
+   end
+   f:close()
+   split_cost["a"] = 4 - math.log(0.9)
+   split_cost["i"] = split_cost["a"]
+end
+
+local function builtin_split(sentence)
+   if not split_cost then load_split_cost() end
+   local s = sentence:lower()
+   local n = #s
+   if n < 2 or n > 60 or not s:match("^[a-z]+$") then return sentence end
+   local best, prev = { [0] = 0 }, {}
+   for i = 1, n do
+      best[i] = math.huge
+      for j = math.max(0, i - split_maxlen), i - 1 do
+         local c = split_cost[s:sub(j + 1, i)]
+         if c and best[j] + c < best[i] then
+            best[i] = best[j] + c
+            prev[i] = j
+         end
+      end
+   end
+   if best[n] == math.huge then return sentence end
+   local parts, i = {}, n
+   while i > 0 do
+      table.insert(parts, 1, sentence:sub(prev[i] + 1, i))
+      i = prev[i]
+   end
+   return table.concat(parts, " ")
+end
+
 local function init(env)
    env.mem = Memory(env.engine,env.engine.schema)
    env.mem:memorize(function(commit) memory_callback(env.mem, commit) end)
@@ -23,6 +68,11 @@ local function init(env)
       wordninja_split = function(sentence)
          return sentence
       end
+      return
+   end
+
+   if env.engine.schema.config:get_bool('easy_en/use_builtin_split') then
+      wordninja_split = builtin_split
       return
    end
 
