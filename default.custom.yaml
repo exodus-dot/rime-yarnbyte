@@ -2,12 +2,10 @@ customization:
   distribution_code_name: Weasel
   distribution_version: 0.17.4
   generator: "Rime::SwitcherSettings"
-  modified_time: "Thu Sep  3 16:15:37 2026"
+  modified_time: "Thu Oct 22 17:06:21 2026"
   rime_version: 1.13.1
 patch:
   schema_list:
-    - {schema: xhup}
-    - {schema: double_pinyin_flypy}
     - {schema: easy_en}
     - {schema: flyhe_fast}
     - {schema: flypy_xhfast}

@@ -30,11 +30,19 @@ function easy_en_rank.func(input, env)
     local items = {}
     for cand in input:iter() do
         local lower = cand.text:lower():gsub("%s+$", "") -- 上游 enhance_filter 会给候选补尾部空格
+        local plain = lower:gsub("[%s']", "")           -- I've -> ive，用于匹配输入和查词频
+        local exact = 0
+        if cand.comment == "💡" then
+            exact = 3
+        elseif plain == ctx_input then
+            -- 缩写（I've、can't、don't）排在同码的普通词前面，除非普通词本身很常用（如 its）
+            if lower:find("'", 1, true) and (freq[plain] or 0) < 40 then exact = 2 else exact = 1 end
+        end
         items[#items + 1] = {
             cand = cand,
             idx = #items,
-            exact = (cand.comment == "💡") and 2 or ((lower:gsub("%s+", "") == ctx_input) and 1 or 0),
-            w = freq[lower] or 0,
+            exact = exact,
+            w = freq[lower] or freq[plain] or 0,
             len = #lower,
         }
     end

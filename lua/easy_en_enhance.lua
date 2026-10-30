@@ -16,6 +16,16 @@ end
 
 -- [yarnbyte] 纯 Lua 拆词：用 lua/easy_en_rank.txt 的词频做最小代价切分，不依赖 wordninja 外部程序
 local split_cost, split_maxlen
+-- 不含 its（它的）、id、ill、were、well、hell 这类本身是常用词的形式
+local split_contractions = {
+   ive = "I've", im = "I'm",
+   dont = "don't", doesnt = "doesn't", didnt = "didn't", isnt = "isn't", arent = "aren't",
+   wasnt = "wasn't", werent = "weren't", havent = "haven't", hasnt = "hasn't", hadnt = "hadn't",
+   cant = "can't", couldnt = "couldn't", wouldnt = "wouldn't", shouldnt = "shouldn't", wont = "won't",
+   youre = "you're", theyre = "they're", youve = "you've", weve = "we've", theyve = "they've",
+   youll = "you'll", theyll = "they'll", thats = "that's", whats = "what's", lets = "let's",
+   theres = "there's", heres = "here's", hes = "he's", shes = "she's",
+}
 local function load_split_cost()
    split_cost, split_maxlen = {}, 0
    local min_freq = { [2] = 40, [3] = 20 }
@@ -34,11 +44,17 @@ local function load_split_cost()
    split_cost["i"] = split_cost["a"]
    -- 词频表（ECDICT）没有的常用缩写，补一个中等频率，避免被拆成单字母（如 ai -> a i）
    split_cost["am"] = 4 - math.log(0.8)
-   for _, w in ipairs({ "ai", "ok", "tv", "pc", "ui", "ux", "ip", "db", "api", "app", "apps", "url", "css", "html", "sql", "json", "cpu", "gpu", "ios", "wifi", "usb" }) do
+   for _, w in ipairs({ "ai", "ok", "tv", "pc", "ui", "ux", "ip", "db", "api", "app", "apps", "url", "css", "html", "sql", "json", "cpu", "gpu", "ios", "wifi", "usb", "whatsapp" }) do
       if not split_cost[w] then
          split_cost[w] = 4 - math.log(0.45)
          if #w > split_maxlen then split_maxlen = #w end
       end
+   end
+   -- 缩写：拆词时按去撇号的形式匹配，输出时还原（ivebeen -> I've been）
+   for w in pairs(split_contractions) do
+      local c = 4 - math.log(0.6)
+      if not split_cost[w] or split_cost[w] > c then split_cost[w] = c end
+      if #w > split_maxlen then split_maxlen = #w end
    end
 end
 
@@ -61,7 +77,8 @@ local function builtin_split(sentence)
    if best[n] == math.huge then return sentence end
    local parts, i = {}, n
    while i > 0 do
-      table.insert(parts, 1, sentence:sub(prev[i] + 1, i))
+      local tok = sentence:sub(prev[i] + 1, i)
+      table.insert(parts, 1, split_contractions[tok:lower()] or tok)
       i = prev[i]
    end
    return table.concat(parts, " ")
